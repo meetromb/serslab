@@ -938,10 +938,23 @@
       }
 
       /* Вертикальный формат для слайдов в блоке "Лаборатория" на мобильных */
+      #team .prototypes-track {
+        gap: 0 !important; /* Убираем gap на мобильных */
+      }
+
       #team .prototype-slide {
+        width: 100% !important; /* Фиксированная ширина */
+        min-width: 100% !important; /* Минимальная ширина */
+        max-width: 100% !important; /* Максимальная ширина */
+        flex-shrink: 0 !important; /* Не сжимается */
         height: 500px !important; /* Вертикальный формат с фиксированной высотой */
         border-radius: 12px !important; /* Закругленные края как на ПК */
         overflow: hidden !important;
+        margin-right: 24px !important; /* Используем margin вместо gap для отступа */
+      }
+
+      #team .prototype-slide:last-child {
+        margin-right: 0 !important; /* Убираем margin у последнего слайда */
       }
 
       #team .prototype-slide img,
@@ -2598,11 +2611,35 @@
       function fixLabSlidesAspectRatio() {
         if (window.innerWidth <= 640) {
           const labSlides = document.querySelectorAll('#team .prototype-slide');
+          const slider = document.querySelector('#team .prototypes-slider');
+          
+          // Получаем ширину контейнера слайдера
+          let sliderWidth = window.innerWidth;
+          if (slider) {
+            sliderWidth = slider.offsetWidth;
+          } else {
+            // Если слайдер еще не загружен, используем ширину окна минус padding
+            const teamSection = document.querySelector('#team > div');
+            if (teamSection) {
+              const computedStyle = window.getComputedStyle(teamSection);
+              const paddingLeft = parseInt(computedStyle.paddingLeft) || 0;
+              const paddingRight = parseInt(computedStyle.paddingRight) || 0;
+              sliderWidth = window.innerWidth - paddingLeft - paddingRight;
+            } else {
+              sliderWidth = window.innerWidth - 48; // Fallback
+            }
+          }
+          
           labSlides.forEach(function(slide) {
-            // Устанавливаем фиксированную высоту для вертикального формата
+            // Устанавливаем фиксированную ширину и высоту для вертикального формата
+            // Используем calc(100% - 0px) чтобы избежать проблем с gap
+            slide.style.width = sliderWidth + 'px';
+            slide.style.minWidth = sliderWidth + 'px';
+            slide.style.maxWidth = sliderWidth + 'px';
             slide.style.height = '500px';
             slide.style.borderRadius = '12px';
             slide.style.overflow = 'hidden';
+            slide.style.flexShrink = '0';
             
             // Исправляем object-fit для изображений и видео (как на ПК)
             const img = slide.querySelector('img');
@@ -2610,10 +2647,14 @@
             if (img) {
               img.style.objectFit = 'cover';
               img.style.borderRadius = '12px';
+              img.style.width = '100%';
+              img.style.height = '100%';
             }
             if (video) {
               video.style.objectFit = 'cover';
               video.style.borderRadius = '12px';
+              video.style.width = '100%';
+              video.style.height = '100%';
             }
           });
         } else {
