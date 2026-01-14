@@ -939,15 +939,17 @@
 
       /* Вертикальный формат для слайдов в блоке "Лаборатория" на мобильных */
       #team .prototype-slide {
-        height: auto !important;
-        aspect-ratio: 3 / 4 !important; /* Вертикальный формат (высота больше ширины) */
+        height: 500px !important; /* Вертикальный формат с фиксированной высотой */
+        border-radius: 12px !important; /* Закругленные края как на ПК */
+        overflow: hidden !important;
       }
 
       #team .prototype-slide img,
       #team .prototype-slide video {
-        object-fit: contain !important; /* Показываем изображение полностью без обрезки */
+        object-fit: cover !important; /* Как на ПК - заполнение с обрезкой */
         width: 100% !important;
         height: 100% !important;
+        border-radius: 12px !important; /* Закругленные края */
       }
 
       /* Скрываем левую стрелку на мобильных (показывается только если не на первом слайде) */
@@ -2592,24 +2594,40 @@
     document.addEventListener('DOMContentLoaded', function() {
       initSlider();
       
-      // Исправление aspect ratio для слайдов в блоке "Лаборатория" на мобильных
+      // Исправление стилей для слайдов в блоке "Лаборатория" на мобильных
       function fixLabSlidesAspectRatio() {
         if (window.innerWidth <= 640) {
           const labSlides = document.querySelectorAll('#team .prototype-slide');
           labSlides.forEach(function(slide) {
-            // Удаляем inline-стили height, чтобы применился aspect-ratio из CSS
-            slide.style.height = '';
-            // Устанавливаем aspect-ratio через inline-стиль для гарантии
-            slide.style.aspectRatio = '3 / 4';
+            // Устанавливаем фиксированную высоту для вертикального формата
+            slide.style.height = '500px';
+            slide.style.borderRadius = '12px';
+            slide.style.overflow = 'hidden';
             
-            // Исправляем object-fit для изображений и видео
+            // Исправляем object-fit для изображений и видео (как на ПК)
             const img = slide.querySelector('img');
             const video = slide.querySelector('video');
             if (img) {
-              img.style.objectFit = 'contain';
+              img.style.objectFit = 'cover';
+              img.style.borderRadius = '12px';
             }
             if (video) {
-              video.style.objectFit = 'contain';
+              video.style.objectFit = 'cover';
+              video.style.borderRadius = '12px';
+            }
+          });
+        } else {
+          // На десктопе возвращаем оригинальные стили
+          const labSlides = document.querySelectorAll('#team .prototype-slide');
+          labSlides.forEach(function(slide) {
+            slide.style.height = '400px';
+            const img = slide.querySelector('img');
+            const video = slide.querySelector('video');
+            if (img) {
+              img.style.objectFit = 'cover';
+            }
+            if (video) {
+              video.style.objectFit = 'cover';
             }
           });
         }
