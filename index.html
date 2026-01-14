@@ -1243,11 +1243,26 @@
           if (input && input.value === correctPassword) {
             setAuthorized();
             document.body.classList.add('authorized');
+            
+            // Явно показываем контент
+            const header = document.querySelector('header');
+            const main = document.querySelector('main');
+            if (header) {
+              header.style.display = '';
+            }
+            if (main) {
+              main.style.display = '';
+            }
+            
             if (overlay) {
               overlay.classList.add('hidden');
             }
+            
             // Очищаем пароль из памяти
             input.value = '';
+            if (error) {
+              error.classList.remove('show');
+            }
           } else {
             if (error) {
               error.classList.add('show');
@@ -1259,26 +1274,8 @@
           }
         }
         
-        // Инициализация после загрузки DOM
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() {
-            const submitBtn = document.getElementById('password-submit');
-            const input = document.getElementById('password-input');
-            
-            if (submitBtn) {
-              submitBtn.addEventListener('click', checkPassword);
-            }
-            
-            if (input) {
-              input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                  checkPassword();
-                }
-              });
-              input.focus();
-            }
-          });
-        } else {
+        // Инициализация обработчиков
+        function initPasswordHandlers() {
           const submitBtn = document.getElementById('password-submit');
           const input = document.getElementById('password-input');
           
@@ -1292,16 +1289,26 @@
                 checkPassword();
               }
             });
-            input.focus();
+            setTimeout(function() {
+              input.focus();
+            }, 100);
           }
+        }
+        
+        // Инициализация после загрузки DOM
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initPasswordHandlers);
+        } else {
+          // Если DOM уже загружен, инициализируем сразу
+          setTimeout(initPasswordHandlers, 0);
         }
         
         // Защита от удаления overlay через DevTools
         const observer = new MutationObserver(function(mutations) {
-          const overlay = document.getElementById('password-overlay');
-          const body = document.body;
-          
           if (!isAuthorized()) {
+            const overlay = document.getElementById('password-overlay');
+            const body = document.body;
+            
             if (overlay && overlay.classList.contains('hidden')) {
               overlay.classList.remove('hidden');
             }
@@ -1345,6 +1352,15 @@
         const overlay = document.getElementById('password-overlay');
         if (overlay) {
           overlay.classList.add('hidden');
+        }
+        // Явно показываем контент
+        const header = document.querySelector('header');
+        const main = document.querySelector('main');
+        if (header) {
+          header.style.display = '';
+        }
+        if (main) {
+          main.style.display = '';
         }
       }
     })();
