@@ -937,9 +937,27 @@
         min-width: 100% !important;
       }
 
-      /* Скрываем левую стрелку на мобильных */
-      .slider-prev {
+      /* Вертикальный формат для слайдов в блоке "Лаборатория" на мобильных */
+      #team .prototype-slide {
+        height: auto !important;
+        aspect-ratio: 3 / 4 !important; /* Вертикальный формат (высота больше ширины) */
+      }
+
+      #team .prototype-slide img,
+      #team .prototype-slide video {
+        object-fit: contain !important; /* Показываем изображение полностью без обрезки */
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* Скрываем левую стрелку на мобильных (показывается только если не на первом слайде) */
+      #team .slider-prev {
         display: none !important;
+      }
+
+      /* Кнопка ">" видна на мобильных (управляется через JavaScript) */
+      #team .slider-next {
+        z-index: 100 !important;
       }
 
       /* Tooltip по центру экрана горизонтально на мобильных */
@@ -2387,9 +2405,92 @@
       nextBtn = document.querySelector('.slider-next');
       
       if (track && slides.length > 0 && slider) {
-        // На мобильных устройствах используем нативный скролл
+        // На мобильных устройствах используем нативный скролл, но кнопки работают
         if (isMobile()) {
-          // Убираем обработчики drag-and-drop для мобильных
+          // Инициализируем переменные для мобильных
+          currentSlide = 0;
+          
+          // Функция для перелистывания на мобильных
+          function scrollToSlideMobile(slideIndex) {
+            if (!slides || slides.length === 0 || !slider) return;
+            
+            const slide = slides[slideIndex];
+            if (slide) {
+              // Вычисляем позицию для скролла
+              const slideWidth = slider.offsetWidth;
+              const gap = 24;
+              const scrollPosition = slideIndex * slideWidth;
+              
+              // Используем scrollTo для плавного перехода
+              slider.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+              });
+              
+              currentSlide = slideIndex;
+              
+              // Обновляем видимость кнопок
+              updateMobileButtons();
+            }
+          }
+          
+          // Функция обновления видимости кнопок на мобильных
+          function updateMobileButtons() {
+            if (prevBtn && nextBtn) {
+              if (currentSlide === 0) {
+                prevBtn.style.display = 'none';
+              } else {
+                prevBtn.style.display = 'flex';
+              }
+              
+              if (currentSlide >= slides.length - 1) {
+                nextBtn.style.display = 'none';
+              } else {
+                nextBtn.style.display = 'flex';
+              }
+            }
+          }
+          
+          // Сохраняем оригинальную функцию для десктопа
+          const originalSlidePrototypes = window.slidePrototypes;
+          
+          // Переопределяем функцию slidePrototypes для мобильных
+          window.slidePrototypes = function(direction) {
+            if (isMobile()) {
+              const newSlide = currentSlide + direction;
+              if (newSlide >= 0 && newSlide < slides.length) {
+                scrollToSlideMobile(newSlide);
+              }
+            } else {
+              // Используем оригинальную функцию для десктопа
+              if (originalSlidePrototypes) {
+                originalSlidePrototypes(direction);
+              }
+            }
+          };
+          
+          // Инициализируем видимость кнопок
+          updateMobileButtons();
+          
+          // Отслеживаем скролл для обновления currentSlide (опционально, для синхронизации)
+          let scrollTimeout;
+          slider.addEventListener('scroll', function() {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(function() {
+              // Определяем текущий слайд на основе позиции скролла
+              const scrollLeft = slider.scrollLeft;
+              const slideWidth = slider.offsetWidth;
+              const gap = 24;
+              const slideWidthWithGap = slideWidth + gap;
+              const newSlide = Math.round(scrollLeft / slideWidthWithGap);
+              
+              if (newSlide !== currentSlide && newSlide >= 0 && newSlide < slides.length) {
+                currentSlide = newSlide;
+                updateMobileButtons();
+              }
+            }, 150);
+          }, { passive: true });
+          
           return;
         }
         
@@ -2490,6 +2591,37 @@
     // Инициализация при загрузке
     document.addEventListener('DOMContentLoaded', function() {
       initSlider();
+      
+      // Исправление aspect ratio для слайдов в блоке "Лаборатория" на мобильных
+      function fixLabSlidesAspectRatio() {
+        if (window.innerWidth <= 640) {
+          const labSlides = document.querySelectorAll('#team .prototype-slide');
+          labSlides.forEach(function(slide) {
+            // Удаляем inline-стили height, чтобы применился aspect-ratio из CSS
+            slide.style.height = '';
+            // Устанавливаем aspect-ratio через inline-стиль для гарантии
+            slide.style.aspectRatio = '3 / 4';
+            
+            // Исправляем object-fit для изображений и видео
+            const img = slide.querySelector('img');
+            const video = slide.querySelector('video');
+            if (img) {
+              img.style.objectFit = 'contain';
+            }
+            if (video) {
+              video.style.objectFit = 'contain';
+            }
+          });
+        }
+      }
+      
+      // Применяем при загрузке
+      fixLabSlidesAspectRatio();
+      
+      // Применяем при изменении размера окна
+      window.addEventListener('resize', function() {
+        fixLabSlidesAspectRatio();
+      });
       
       // Корректировка позиции tooltip на мобильных (вертикально относительно текста, горизонтально по центру экрана)
       function setupMobileTooltipPosition() {
