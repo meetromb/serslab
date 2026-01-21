@@ -6,10 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
 
-  <!-- Можно подключить Inter или другую схожую гарнитуру -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Chart.js для интерактивных графиков -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
@@ -248,7 +246,7 @@
     p {
       margin: 0;
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.8;
       color: var(--text-muted);
     }
 
@@ -795,6 +793,110 @@
       padding: 10px;
     }
 
+    /* Выделяющаяся рамка для важного текста с эффектом стекла */
+    .highlight-box {
+      position: relative;
+      border-radius: 18px;
+      padding: 32px 28px;
+      margin: 40px 0;
+      backdrop-filter: blur(50px) saturate(200%);
+      -webkit-backdrop-filter: blur(50px) saturate(200%);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.6);
+      overflow: hidden;
+    }
+
+    .highlight-box::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150%;
+      height: 150%;
+      border-radius: 50%;
+      opacity: 0.6;
+      filter: blur(80px);
+      -webkit-filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse, rgba(156, 39, 176, 0.4) 0%, rgba(123, 31, 162, 0.3) 30%, rgba(215, 208, 234, 0.2) 60%, transparent 80%);
+      animation: morph-highlight 15s ease-in-out infinite;
+    }
+
+    .highlight-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.15), transparent);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    @keyframes morph-highlight {
+      0%, 100% { 
+        transform: translate(-50%, -50%) scaleX(1) scaleY(1) rotate(0deg);
+        border-radius: 50%;
+      }
+      25% {
+        transform: translate(-50%, -50%) scaleX(1.15) scaleY(0.95) rotate(0deg);
+        border-radius: 48% 52% 52% 48%;
+      }
+      50% {
+        transform: translate(-50%, -50%) scaleX(0.95) scaleY(1.15) rotate(45deg);
+        border-radius: 52% 48% 48% 52%;
+      }
+      75% {
+        transform: translate(-50%, -50%) scaleX(1.1) scaleY(1.05) rotate(22deg);
+        border-radius: 50% 50% 48% 52%;
+      }
+    }
+
+    .highlight-box > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-main);
+    }
+
+    .highlight-box p + p {
+      margin-top: 16px;
+    }
+
+    .highlight-box i {
+      font-style: italic;
+    }
+
+    /* Иконка стрелочки для ссылок в лонгриде */
+    .article-body a[href^="http"] {
+      display: inline;
+    }
+
+    .article-body a[href^="http"]::after {
+      content: '→';
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 0.9em;
+      line-height: 1;
+      opacity: 0.7;
+      transform: rotate(-45deg);
+      transition: opacity 0.2s, transform 0.2s;
+      vertical-align: baseline;
+    }
+
+    .article-body a[href^="http"]:hover::after {
+      opacity: 1;
+      transform: rotate(-45deg) translateX(2px);
+    }
+
     /* Стили для HTML легенды графиков */
     .chart-legend {
       font-family: 'Inter', sans-serif;
@@ -1037,19 +1139,20 @@
         display: grid !important;
       }
 
-      /* Карточки команды - обе в одну строку на мобильных, по 50% ширины */
+      /* Карточки команды - три в одну строку на мобильных, без переноса */
       #team > div > div:first-of-type > div:last-child {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         justify-content: center !important;
-        gap: 12px !important;
+        gap: 6px !important;
       }
 
-      /* Размер карточек команды на мобильных - 50% */
+      /* Размер карточек команды на мобильных - равномерное распределение */
       #team > div > div:first-of-type > div:last-child > div {
-        flex: 0 0 calc(50% - 6px) !important;
-        max-width: calc(50% - 6px) !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
       }
 
       /* Фото в карточках команды на мобильных */
@@ -1057,11 +1160,23 @@
         width: 100% !important;
         height: auto !important;
         aspect-ratio: 1 !important;
+        max-width: 100% !important;
+      }
+
+      /* Уменьшаем размер карточек команды на мобильных */
+      #team > div > div:first-of-type > div:last-child > div {
+        width: auto !important;
       }
 
       /* Уменьшенный шрифт для имени на мобильных */
       #team > div > div:first-of-type > div:last-child > div > div:nth-child(2) {
-        font-size: 14px !important;
+        font-size: 11px !important;
+        line-height: 1.2 !important;
+      }
+
+      /* Уменьшаем отступы в карточках на мобильных */
+      #team > div > div:first-of-type > div:last-child > div > div:first-child {
+        margin-bottom: 8px !important;
       }
 
       /* Уменьшенный шрифт для должности на мобильных */
@@ -1076,6 +1191,21 @@
       /* Карточки прототипов - 100% ширины на мобильных */
       .prototype-slide {
         min-width: 100% !important;
+      }
+
+      /* Масштабирование spectra.png на мобильных */
+      .article-body img[src="spectra.png"] {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      /* Масштабирование scattering_energy_states.png на мобильных */
+      .article-body img[src="scattering_energy_states.png"],
+      img[src="scattering_energy_states.png"] {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
       }
     }
 
@@ -1129,275 +1259,9 @@
       opacity: 1;
       transform: translateX(calc(-50% + var(--tooltip-offset-x, 0px))) translateY(0);
     }
-
-    /* ====== ЗАЩИТА ПАРОЛЕМ ====== */
-    #password-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #ffffff;
-      z-index: 99999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    #password-overlay.hidden {
-      display: none !important;
-    }
-
-    .password-container {
-      text-align: center;
-      padding: 40px;
-      max-width: 400px;
-      width: 90%;
-    }
-
-    .password-container h2 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 24px;
-      color: #121212;
-    }
-
-    .password-input-wrapper {
-      position: relative;
-      margin-bottom: 16px;
-    }
-
-    .password-input-wrapper input {
-      width: 100%;
-      padding: 14px 18px;
-      font-size: 16px;
-      border: 2px solid #000;
-      border-radius: 8px;
-      font-family: "Inter", sans-serif;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .password-input-wrapper input:focus {
-      border-color: #333;
-    }
-
-    .password-error {
-      color: #d32f2f;
-      font-size: 14px;
-      margin-top: 8px;
-      min-height: 20px;
-      display: none;
-    }
-
-    .password-error.show {
-      display: block;
-    }
-
-    .password-submit {
-      width: 100%;
-      padding: 14px 24px;
-      background: #000;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: "Inter", sans-serif;
-      transition: background 0.2s;
-    }
-
-    .password-submit:hover {
-      background: #333;
-    }
-
-    .password-submit:active {
-      background: #000;
-    }
-
-    /* Скрытие контента до авторизации */
-    body:not(.authorized) > header,
-    body:not(.authorized) > main {
-      display: none !important;
-    }
   </style>
 </head>
 <body>
-  <!-- Overlay для ввода пароля -->
-  <div id="password-overlay">
-    <div class="password-container">
-      <h2>Введите пароль</h2>
-      <div class="password-input-wrapper">
-        <input type="password" id="password-input" placeholder="Пароль" autocomplete="off" />
-      </div>
-      <div class="password-error" id="password-error">Неверный пароль</div>
-      <button class="password-submit" id="password-submit">Войти</button>
-    </div>
-  </div>
-
-  <script>
-    // Защита паролем - выполняется до загрузки контента
-    (function() {
-      'use strict';
-      
-      // Простая обфускация пароля (базовая защита от просмотра в DevTools)
-      const p = ['8', '3', '8', '6'];
-      const correctPassword = p.join('');
-      
-      // Проверка авторизации
-      function isAuthorized() {
-        try {
-          return sessionStorage.getItem('_auth') === btoa(correctPassword).split('').reverse().join('');
-        } catch(e) {
-          return false;
-        }
-      }
-      
-      // Установка авторизации
-      function setAuthorized() {
-        try {
-          sessionStorage.setItem('_auth', btoa(correctPassword).split('').reverse().join(''));
-        } catch(e) {}
-      }
-      
-      // Проверка при загрузке
-      if (!isAuthorized()) {
-        // Скрываем контент
-        document.body.classList.remove('authorized');
-        
-        // Обработчик ввода пароля
-        function checkPassword() {
-          const input = document.getElementById('password-input');
-          const error = document.getElementById('password-error');
-          const overlay = document.getElementById('password-overlay');
-          
-          if (input && input.value === correctPassword) {
-            setAuthorized();
-            document.body.classList.add('authorized');
-            
-            // Явно показываем контент
-            const header = document.querySelector('header');
-            const main = document.querySelector('main');
-            if (header) {
-              header.style.display = '';
-            }
-            if (main) {
-              main.style.display = '';
-            }
-            
-            if (overlay) {
-              overlay.classList.add('hidden');
-            }
-            
-            // Очищаем пароль из памяти
-            input.value = '';
-            if (error) {
-              error.classList.remove('show');
-            }
-          } else {
-            if (error) {
-              error.classList.add('show');
-            }
-            if (input) {
-              input.value = '';
-              input.focus();
-            }
-          }
-        }
-        
-        // Инициализация обработчиков
-        function initPasswordHandlers() {
-          const submitBtn = document.getElementById('password-submit');
-          const input = document.getElementById('password-input');
-          
-          if (submitBtn) {
-            submitBtn.addEventListener('click', checkPassword);
-          }
-          
-          if (input) {
-            input.addEventListener('keypress', function(e) {
-              if (e.key === 'Enter') {
-                checkPassword();
-              }
-            });
-            setTimeout(function() {
-              input.focus();
-            }, 100);
-          }
-        }
-        
-        // Инициализация после загрузки DOM
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initPasswordHandlers);
-        } else {
-          // Если DOM уже загружен, инициализируем сразу
-          setTimeout(initPasswordHandlers, 0);
-        }
-        
-        // Защита от удаления overlay через DevTools
-        const observer = new MutationObserver(function(mutations) {
-          if (!isAuthorized()) {
-            const overlay = document.getElementById('password-overlay');
-            const body = document.body;
-            
-            if (overlay && overlay.classList.contains('hidden')) {
-              overlay.classList.remove('hidden');
-            }
-            if (body && !body.classList.contains('authorized')) {
-              const header = document.querySelector('header');
-              const main = document.querySelector('main');
-              if (header) header.style.display = 'none';
-              if (main) main.style.display = 'none';
-            }
-          }
-        });
-        
-        // Наблюдаем за изменениями в DOM
-        if (document.body) {
-          observer.observe(document.body, {
-            childList: true,
-            attributes: true,
-            attributeFilter: ['class', 'style'],
-            subtree: true
-          });
-        }
-        
-        // Периодическая проверка (дополнительная защита)
-        setInterval(function() {
-          if (!isAuthorized()) {
-            document.body.classList.remove('authorized');
-            const overlay = document.getElementById('password-overlay');
-            if (overlay) {
-              overlay.classList.remove('hidden');
-            }
-            const header = document.querySelector('header');
-            const main = document.querySelector('main');
-            if (header) header.style.display = 'none';
-            if (main) main.style.display = 'none';
-          }
-        }, 1000);
-        
-      } else {
-        // Уже авторизован
-        document.body.classList.add('authorized');
-        const overlay = document.getElementById('password-overlay');
-        if (overlay) {
-          overlay.classList.add('hidden');
-        }
-        // Явно показываем контент
-        const header = document.querySelector('header');
-        const main = document.querySelector('main');
-        if (header) {
-          header.style.display = '';
-        }
-        if (main) {
-          main.style.display = '';
-        }
-      }
-    })();
-  </script>
 <header>
   <div class="nav">
     <div class="nav-left">
@@ -1436,7 +1300,6 @@
 </header>
 
 <main>
-  <!-- ====== БЛОК RESEARCH ====== -->
   <section id="research" class="section">
     <div class="research-hero">
       <div>
@@ -1446,7 +1309,6 @@
         </div>
   </section>
 
-  <!-- ====== БЛОК МИССИИ ====== -->
   <section id="mission" class="mission-section">
     <div class="mission-inner">
       <div style="margin-bottom: 24px;">
@@ -1458,7 +1320,7 @@
         </div>
         <div>
           <p>
-            Классический биохимический анализ крови основан на некольких разнородных методах анализа: <span class="tooltip-term" data-tooltip="Фотометрия — метод количественного анализа, основанный на измерении поглощения света веществом. Используется для определения концентрации веществ в растворе по интенсивности поглощения света определённой длины волны.">фотометрия</span>, <span class="tooltip-term" data-tooltip="Кинетический анализ — метод определения концентрации веществ на основе измерения скорости химической реакции. Позволяет отслеживать изменения концентрации реагентов во времени.">кинетический анализ</span>, <span class="tooltip-term" data-tooltip="ИФА (иммуноферментный анализ) — метод определения наличия антител или антигенов в образце с использованием специфических иммунных реакций и ферментативных меток. Широко применяется для диагностики инфекционных заболеваний и определения гормонов.">ИФА</span>, <span class="tooltip-term" data-tooltip="Электрофорез — метод разделения заряженных частиц (белков, ДНК, РНК) в электрическом поле. Основан на различии в подвижности частиц в зависимости от их размера и заряда.">электрофорез</span>.
+            Классический биохимический анализ крови основан на некольких разнородных методах анализа: <span class="tooltip-term" data-tooltip="Измерение, сколько света поглощает или пропускает образец. По изменению оптической плотности рассчитывают концентрацию вещества.">фотометрия</span>, <span class="tooltip-term" data-tooltip="Метод, где важна не “конечная точка”, а скорость реакции. Концентрацию находят по тому, как быстро меняется сигнал во времени.">кинетический анализ</span>, <span class="tooltip-term" data-tooltip="Тест на основе реакции “антиген–антитело” с ферментной меткой. Сигнал (обычно цвет/свет) показывает наличие и количество нужного белка/маркера.">ИФА</span>, <span class="tooltip-term" data-tooltip="Разделение молекул в электрическом поле. Компоненты (например, белки) расходятся по скорости движения и образуют характерный профиль.">электрофорез</span>.
           </p>
           <p style="margin-top: 10px;">
             Мы хотим сделать универсальный метод, который выполняется быстрее и не требует набора разрозненных приборов и методик в лаборатории.
@@ -1509,7 +1371,6 @@
     </div>
   </section>
 
-  <!-- ====== ВАКАНСИЯ ====== -->
   <section id="alignment" class="section article-section">
     <div class="article-layout">
       <aside>
@@ -1526,11 +1387,10 @@
         <div class="article-badge mobile-only">Кого мы ищем</div>
         <h2 style="margin-bottom: 24px; margin-top: 0px;">ML Engineer</h2>
         
-        <!-- ML-задача -->
         <div style="margin-bottom: 32px; padding: 24px; background: aliceblue; border-radius: 12px;">
           <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Описание задачи</h3>
           <p style="margin-bottom: 30px; line-height: 1.6;">
-            Из SERS спектра сыворотки крови пациента предсказать <b>8 численных биохимических параметра</b>.
+            По SERS-спектру сыворотки крови пациента предсказать 8 численных биохимических параметров</b>.
           </p>
           <div style="margin-bottom: 20px;">
             <strong>Данные:</strong> 1D спектры, 100 пациентов (по 100 спектров). Спектр фонового шума подложки, детектора. Физические референсные значения. 
@@ -1596,39 +1456,39 @@
     </div>
   </section>
 
-  <!-- ====== КТО МЫ ====== -->
   <section id="team" style="background: #1a1a1a; color: #ffffff; width: 100%;">
     <div style="max-width: var(--max-width); margin: 0 auto; padding: 80px 24px;">
       <h2 style="margin-bottom: 40px; font-size: 32px; font-weight: 700;">Кто мы</h2>
       
       <div style="display: grid; grid-template-columns: 1fr auto; gap: 60px; margin-bottom: 80px; align-items: start;">
-        <!-- Описание -->
         <div>
           <p style="font-size: 18px; line-height: 1.6; color: #e0e0e0; margin: 0;">
             Мы — команда исследователей из <a href="https://physics.itmo.ru/ru" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: underline; text-decoration-color: #666;">ИТМО</a> и <a href="https://hnsgroup.tech/" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: underline; text-decoration-color: #666;">группы гибридной нанофотоники (HNS)</a>, создающая SERS биосенсоры для медицинских лабораторий.
           </p>
         </div>
 
-        <!-- Карточки команды -->
         <div style="display: flex; gap: 32px; flex-wrap: wrap;">
           <div style="text-align: center;">
             <div style="width: 200px; height: 200px; background: #2a2a2a; border-radius: 12px; margin-bottom: 16px; overflow: hidden;">
               <img src="people/alexander.png" alt="Лошкарев Александр" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div style="font-weight: 600; font-size: 18px; margin-bottom: 4px;">Лошкарев Александр</div>
-            <!-- <div style="color: #b0b0b0; font-size: 14px;">Исследователь</div> -->
           </div>
           <div style="text-align: center;">
             <div style="width: 200px; height: 200px; background: #2a2a2a; border-radius: 12px; margin-bottom: 16px; overflow: hidden;">
               <img src="people/ekaterina.png" alt="Екатерина Понкратова" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div style="font-weight: 600; font-size: 18px; margin-bottom: 4px;">Екатерина Понкратова</div>
-            <!-- <div style="color: #b0b0b0; font-size: 14px;">Исследователь</div> -->
+          </div>
+          <div style="text-align: center;">
+            <div style="width: 200px; height: 200px; background: #2a2a2a; border-radius: 12px; margin-bottom: 16px; overflow: hidden;">
+              <img src="people/artem.png" alt="Артем Штумпф" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.style.background='#2a2a2a';">
+            </div>
+            <div style="font-weight: 600; font-size: 18px; margin-bottom: 4px;">Артем Штумпф</div>
           </div>
         </div>
       </div>
 
-      <!-- Прототипы и лаборатория -->
       <div style="margin-bottom: 80px;">
         <h3 style="font-size: 24px; font-weight: 600; margin-bottom: 32px; color: #ffffff;">Лаборатория</h3>
         <div class="prototypes-slider" style="position: relative; overflow: hidden; border-radius: 12px; user-select: none; cursor: grab;">
@@ -1664,7 +1524,6 @@
         </div>
       </div>
 
-      <!-- Партнерство -->
       <div>
         <h3 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: #ffffff;">Партнерство</h3>
         <p style="font-size: 16px; line-height: 1.6; color: #e0e0e0; max-width: 800px;">
@@ -1674,7 +1533,6 @@
     </div>
   </section>
 
-  <!-- ====== СТАТЬЯ ====== -->
   <section id="article" class="section article-section">
     <div class="article-layout">
       <aside>
@@ -1687,16 +1545,16 @@
       <article class="article-body">
         <h1>От спектра к анализам: SERS и машинное обучение</h1>
         <p class="article-lead">
-          Биохимический анализ крови — одно из базовых исследований, которое позволяет оценить общее состояние здоровья. Ежегодно более <b>30 миллионов человек</b> в России сдают биохимический анализ крови.
-        </p>
-
-        <p>
-          Для определения базовых биохимических показателей используются несколько разнообразых методов: <span class="tooltip-term" data-tooltip="УФ кинетический тест — метод определения активности ферментов, основанный на измерении скорости изменения оптической плотности в ультрафиолетовой области спектра. Используется для определения активности ферментов в сыворотке крови.">УФ кинетический тест</span>, <span class="tooltip-term" data-tooltip="Метод Яффе — колориметрический метод определения креатинина в крови и моче, основанный на реакции креатинина с пикриновой кислотой в щелочной среде. Один из классических методов клинической биохимии.">метод Яффе</span>, <span class="tooltip-term" data-tooltip="Колориметрический фототермический метод — метод анализа, основанный на измерении интенсивности окраски раствора после химической реакции. Фототермический аспект относится к измерению тепловых эффектов, возникающих при поглощении света.">колориметрический фототермический метод</span>, <span class="tooltip-term" data-tooltip="Ферментативный колориметрический метод — метод определения концентрации веществ с использованием специфических ферментов, которые катализируют реакции с образованием окрашенных продуктов. Высокоспецифичный и чувствительный метод.">ферментативный колориметрический метод</span>, <span class="tooltip-term" data-tooltip="Электрофорез — метод разделения заряженных частиц (белков, ДНК, РНК) в электрическом поле. Основан на различии в подвижности частиц в зависимости от их размера и заряда.">электрофорез</span>. 
+          Биохимический анализ крови — одно из базовых исследований, позволяющее оценить общее состояние здоровья. Ежегодно более <b>30 миллионов человек</b> в России сдают биохимический анализ крови, а общий объём лабораторных исследований исчисляется сотнями миллионов. На практике это означает одно: спрос растёт быстрее, чем лаборатории успевают наращивать мощность без потери качества и скорости.
         </p>
 
         <h2>Неэффективность масштабирования текущих методов</h2>
         <p>
-          Традиционные методы биохимического анализа изначально создавались под умеренные объёмы лабораторных исследований. Но сегодня нагрузка уже другая: <b>в <a href="https://businesstat.ru/images/demo/laboratory_services_russia_demo_businesstat.pdf" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">2024 году в России выполнено около 417 млн лабораторных исследований</a></b>. При этом ожидается, что к <b>2030 году рынок</b> будет расти со <b><a href="https://analitikaexpo.com/ru/about/news/2025/september/10/laboratornaya-diagnostika/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">среднегодовым темпом 8,6–10,8%</a></b>, что означает дальнейшее увеличение спроса на анализы и пропускную способность лабораторий.
+          Для определения базовых биохимических показателей используют набор разных подходов: <span class="tooltip-term" data-tooltip="Кинетические измерения в ультрафиолете: прибор отслеживает изменение поглощения УФ-света во времени (часто связано с NADH/NAD⁺). По скорости считают концентрацию/активность.">УФ-кинетические тесты</span>, <span class="tooltip-term" data-tooltip="Классический способ измерения креатинина: он реагирует с пикриновой кислотой в щелочной среде, образуя окрашенный комплекс. Интенсивность окраски используют для расчёта.">метод Яффе</span>, <span class="tooltip-term" data-tooltip="Колориметрия оценивает концентрацию по “цвету” реакции, а ферментативные тесты используют ферменты для высокой специфичности и измеряют продукт реакции по оптическому сигналу.">колориметрические и ферментативные методики</span>, <span class="tooltip-term" data-tooltip="Разделение молекул в электрическом поле. Компоненты (например, белки) расходятся по скорости движения и образуют характерный профиль.">электрофорез</span> и другие. 
+        </p>
+
+        <p>
+          Традиционные методы биохимического анализа изначально создавались под умеренные объёмы лабораторных исследований. Но сегодня нагрузка уже другая: <b>в <a href="https://businesstat.ru/images/demo/laboratory_services_russia_demo_businesstat.pdf" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">2024 году в России выполнено около 417 млн лабораторных исследований</a></b>. При этом ожидается, что к <b>2030 году рынок</b> будет расти со <b><a href="https://analitikaexpo.com/ru/about/news/2025/september/10/laboratornaya-diagnostika/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">среднегодовым темпом 8,6–10,8%</a></b>, что означает дальнейшее увеличение спроса на анализы.
         </p>
 
         <div style="margin: 40px 0;">
@@ -1707,7 +1565,10 @@
         </div>
 
         <p>
-          При росте числа анализов эти операции масштабируются не линейно: увеличиваются время обработки, расход реактивов, вероятность человеческих ошибок и нагрузка на оборудование. Ситуацию усугубляет старение парка: <b><a href="https://medvestnik.ru/content/news/V-Minzdrave-RF-nazvali-dolu-iznoshennogo-medoborudovaniya-v-gosklinikah-regionov.html" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">по итогам 2024 года 24,8% медоборудования эксплуатируется более 10 лет</a></b>. При отсутствии существенного обновления оборудования к 2030 году доля техники ">10 лет" может вырасти примерно до <b>~56%</b>; оценка дана по <a href="https://skladmed.ru/blog/kak-rasschitat-iznos-meditsinskogo-oborudovaniya/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">методологии износа медицинского оборудования</a>.
+          При росте числа анализов процессы в лаборатории масштабируются нелинейно: увеличиваются время обработки и логистики проб, расход реактивов, число повторов из-за погрешностей, нагрузка на персонал и оборудование. 
+        </p>
+        <p>
+          Ситуацию усугубляет старение парка: <b><a href="https://medvestnik.ru/content/news/V-Minzdrave-RF-nazvali-dolu-iznoshennogo-medoborudovaniya-v-gosklinikah-regionov.html" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">по итогам 2024 года 24,8% медоборудования эксплуатируется более 10 лет</a></b>. При отсутствии существенного обновления оборудования к 2030 году доля техники ">10 лет" может вырасти примерно до <b>~56%</b>; оценка дана по <a href="https://skladmed.ru/blog/kak-rasschitat-iznos-meditsinskogo-oborudovaniya/" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">методологии износа медицинского оборудования</a>.
         </p>
         <p>
           В результате возникает <b>дефицит пропускной способности</b>. В иллюстративном расчёте (если в 2024 лаборатории были загружены примерно на <b>~80%</b>) к 2030 “задержка” может выражаться в порядка <b>200–290 млн исследований в год</b>, которые либо уйдут во внешние мощности, либо будут накапливаться в очереди и растягивать сроки выполнения.
@@ -1734,25 +1595,22 @@
           </div>
         </div>
 
+        <div class="highlight-box">
+          <p><i>Для устойчивого развития биохимической диагностики необходим единый универсальный метод, который сможет определять все ключевые параметры всего за несколько минут.</i></p>
+        </div>
 
-        <br/>
-        <hr/>
-
-        <p><i>Для устойчивого развития биохимической диагностики необходим единый универсальный метод, который сможет определять все ключевые параметры всего за несколько минут.</i></p>
+        <p>
+          Чтобы приблизиться к такому универсальному подходу, нужен метод, который получает <b>много химической информации за одно измерение</b>, без отдельной реакции под каждый показатель. Один из наиболее перспективных путей — оптическая спектроскопия: она “считывает” состав образца напрямую по взаимодействию света с молекулами.
+        </p>
 
         <h2>Как свет может считывать информацию о молекулах?</h2>
         <p>
-          И вот на сцену выходит эффект <b><span class="tooltip-term" data-tooltip="SERS (Surface-Enhanced Raman Spectroscopy) — поверхностно-усиленная рамановская спектроскопия. Метод, который использует наноструктурированные металлические поверхности (обычно золото или серебро) для усиления рамановского сигнала в миллионы раз. Плазмонные резонансы на поверхности наноструктур создают локальные электромагнитные поля, которые значительно усиливают рассеяние света молекулами, находящимися вблизи поверхности.">SERS — поверхностно-усиленная рамановская спектроскопия</span></b>. Это чрезвычайно <b>чувствительный метод</b>, способный обнаруживать широкий спектр химических веществ.
-        </p>
-
-        <p>
-          В его основе лежит <b><span class="tooltip-term" data-tooltip="Рамановская спектроскопия — метод анализа молекулярного состава вещества, основанный на неупругом рассеянии света. Когда свет взаимодействует с молекулой, часть фотонов рассеивается с изменением энергии (частоты), что связано с колебательными и вращательными переходами в молекуле. Каждая молекула имеет уникальный спектр, который служит её 'отпечатком пальца'.">рамановская спектроскопия</span></b> — техника, которая анализирует, как <b>свет рассеивается на молекулах</b>. Когда луч попадает на молекулу, возможны три типа рассеяния.
+          Здесь на сцену выходит <span class="tooltip-term" data-tooltip="Изучение взаимодействия света с веществом. Спектр показывает, какие длины волн поглощаются/излучаются/рассеиваются, и помогает определить состав и структуру.">рамановская спектроскопия</span> — метод, который считывает информацию о молекулах по тому, как они <b>рассеивают свет</b>. Когда лазерный луч попадает на молекулу, возможны три типа рассеяния:
         </p>
         
         <div style="display: flex; justify-content: center; margin: 0px 0;">
           <svg width="800" height="400" viewBox="0 0 800 400" style="max-width: 100%;">
             
-            <!-- Лазер -->
             <g id="laser">
               <image x="0" y="155" width="80" height="120" href="objective.png" transform="rotate(-90 40 200)"/>
               <text x="40" y="260" text-anchor="middle" font-family="Inter" font-size="16" fill="#333">
@@ -1760,7 +1618,6 @@
               </text>
             </g>
             
-            <!-- Зеленый луч (падающий свет) - бегущая синусоидальная волна -->
             <g id="incident-beam">
               <path id="wave-main" 
                     stroke="#2ecc71" 
@@ -1769,7 +1626,6 @@
                     opacity="0.9"/>
             </g>
             
-            <!-- Стоксовское рассеяние (вверх, меньшая энергия) -->
             <g id="stokes-scattering">
               <path id="stokes-wave"
                     stroke="#e74c3c" 
@@ -1778,7 +1634,6 @@
                     opacity="0.7"/>
             </g>
             
-            <!-- Анти-Стоксовское рассеяние (вниз, большая энергия) -->
             <g id="anti-stokes-scattering">
               <path id="anti-stokes-wave"
                     stroke="#9b59b6" 
@@ -1787,7 +1642,6 @@
                     opacity="0.7"/>
             </g>
             
-            <!-- Молекула (синий круг) - колеблется вверх-вниз, отображается поверх всех волн -->
             <g id="molecule">
               <circle cx="340" cy="200" r="25" fill="#3498db" stroke="#2980b9" stroke-width="2">
                 <animate attributeName="cy" 
@@ -1803,7 +1657,6 @@
               </text>
             </g>
             
-            <!-- Подписи типов рассеяния справа -->
             <g id="scattering-labels">
               <text x="630" y="50" text-anchor="start" font-family="Inter" font-size="16" fill="#e74c3c" font-weight="600">
                 Стоксовое: <tspan font-style="italic">ν<tspan baseline-shift="sub" font-size="13">0</tspan> - ν</tspan>
@@ -1822,31 +1675,35 @@
         </p>
 
         <p>
-          Чаще всего происходит <span class="tooltip-term" data-tooltip="Рэлеевское рассеяние — упругое рассеяние света, при котором энергия (частота) рассеянного света не изменяется. Происходит, когда фотон взаимодействует с молекулой без передачи энергии. Это наиболее распространённый тип рассеяния, составляющий основную часть рассеянного света.">Рэлеевское</span> <span class="text-black" style="font-style: bold;">(ν<sub>0</sub>)</span>, когда свет возвращается без изменений. Реже наблюдается <span class="tooltip-term" data-tooltip="Стоксовое рассеяние — неупругое рассеяние света, при котором молекула поглощает часть энергии фотона и переходит в возбуждённое колебательное состояние. В результате рассеянный свет имеет меньшую энергию (большую длину волны), чем падающий. Этот тип рассеяния наиболее важен для рамановской спектроскопии, так как сдвиг частоты (волновое число) уникален для каждой молекулы и позволяет идентифицировать химические связи и структуру вещества.">Стоксовое</span> <span class="text-black" style="font-style: bold;">(ν<sub>0</sub> - ν)</span>, при котором молекула, наоборот, забирает часть энергии, и отражённый свет становится менее энергичным.
+          Чаще всего происходит <b>Рэлеевское <span class="text-black" style="font-style: bold;">(ν<sub>0</sub>)</span></b>, при котором частота не меняется — свет возвращается без изменений. Реже наблюдается <b>Стоксовое <span class="text-black" style="font-style: bold;">(ν<sub>0</sub> - ν)</span></b>, при котором молекула, наоборот, забирает часть энергии, и отражённый свет становится менее энергичным (его частота уменьшается).
         </p>
 
         <p>
-          Еще более редким является <span class="tooltip-term" data-tooltip="уку рассеяние — неупругое рассеяние света, при котором молекула поглощает часть энергии фотона и переходит в возбуждённое колебательное состояние. В результате рассеянный свет имеет меньшую энергию (большую длину волны), чем падающий. Этот тип рассеяния наиболее важен для рамановской спектроскопии, так как сдвиг частоты (волновое число) уникален для каждой молекулы и позволяет идентифицировать химические связи и структуру вещества.">Анти-Стоксовое</span> рассеяние <span class="text-black" style="font-style: bold;">(ν<sub>0</sub> + ν)</span>, при котором молекула, наоборот, отдает часть энергии, и отражённый свет становится более энергичным.
+          Еще более редким является <b>Анти-Стоксовое рассеяние <span class="text-black" style="font-style: bold;">(ν<sub>0</sub> + ν)</span></b>, при котором молекула, наоборот, отдает часть энергии, и отражённый свет становится более энергичным (частота увеличивается).
         </p>
 
-        <p>Что самое классное, это то, что в случае Анти-Стоксового рассеяния сдвиг энергии <span class="text-black" style="font-style: bold;">(Δν)</span> уникален для каждого типа молекул. Именно по нему можно идентифицировать исследуемое вещество.</p>
-
-        <h2>Горячие точки: где рождается усиление</h2>
-        <p>
-          Плохая новость заключается в том, что интенсивность Анти-Стоксового рассеяния настолько слабая, что лишь 1 из 10^9 фотонов рассеивается таким образом - это как угадать число из миллиарда возможных вариантов - довольно редкое событие.
-        </p>
+        <p>На практике чаще всего используют стоксовую ветвь. Величина сдвига — <b>Raman shift <span class="text-black" style="font-style: bold;">(Δν)</span></b> — определяется колебательными модами и структурой молекулы. Именно этот “набор смещений” формирует <b>спектральный отпечаток</b>, по которому можно различать вещества.</p>
 
         <div style="display: flex; flex-direction: column; align-items: center; margin: 10px 0 20px 0;">
           <img src="raman_scattering.png" alt="Рамановское рассеяние" style="max-width: 100%; height: auto;">
           <p style="max-width: 640px; text-align: center; font-size: 14px; color: var(--text-muted);">
-            Лазерное возбуждение с длиной волны 488 нм. <br>Самая яркая линия — рэлеевская; слева — стоксовые, справа — антистоксовые линии, но их интенсивность <b>очень слабая</b>.
+            Рассеяние света при лазерном возбуждении с длиной волны 488 нм. <br>Самая яркая линия — рэлеевская; слева — стоксовые, справа — антистоксовые линии, но их интенсивность очень слабая.
           </p>
         </div>
-        
 
-          <p>
-            Чтобы увеличить интенсивность, используется эффект <span class="tooltip-term" data-tooltip="Плазмонное усиление — метод, который использует наноструктурированные металлические поверхности (обычно золото или серебро) для усиления рамановского сигнала в миллионы раз. Плазмонные резонансы на поверхности наноструктур создают локальные электромагнитные поля, которые значительно усиливают рассеяние света молекулами, находящимися вблизи поверхности.">плазмонного усиления</span>. Проще говоря, в металлической наночастице под действием света начинают коллективно колебаться поверхностные электроны. Колебания при этом «не уходят вдаль» как обычная волна — энергия концентрируется рядом с наночастицей, в ближнем электромагнитном поле.
-          </p>
+        <p>
+          Проблема в том, что рамановский сигнал <b>очень слабый</b>: на фоне рэлеевского рассеяния и шумов он теряется, а для сложных биологических сред становится ещё труднее извлекать информативные признаки.
+        </p>
+
+        <h2>Горячие точки: где рождается усиление SERS</h2>
+
+        <p>
+          Чтобы сделать рамановскую спектроскопию практичной для малых концентраций и сложных образцов, используют <b>SERS — поверхностно-усиленное рамановское рассеяние</b>. В основе котрого используется эффект <span class="tooltip-term" data-tooltip="Усиление локального электромагнитного поля возле металлических наноструктур при освещении. Это повышает сигнал (например, в SERS) на порядки.">плазмонного усиления</span>.
+        </p>
+
+        <p>
+          Суть в том, что рядом с металлическими наноструктурами (например, серебром или золотом) под действием света возбуждаются <b>плазмонные колебания электронов</b>. Это приводит к резкому усилению локального электромагнитного поля (E) вблизи поверхности.
+        </p>
 
           <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0;">
             <div style="display: flex; flex-direction: column; align-items: center;">
@@ -1860,24 +1717,23 @@
               <div style="position: absolute; bottom: 0; right: -15px; font-family: Inter; font-size: 14px; font-weight: 600;">-10</div>
             </div>
           </div>
- 
+         
           <p>
-            Места, где энергия концентрируется, называются <b>горячими точками</b>. Именно в них и происходит усиление рассеяния света.
+            Зоны максимальной концентрации поля называют <b>горячими точками</b>. Если молекула оказывается в такой области, её рамановский сигнал возрастает на порядки — усиление может достигать <b>10⁶–10⁹ раз</b>. Благодаря этому SERS превращает “едва заметный” рамановский отклик в измеряемый сигнал и позволяет работать с реальными биообразцами.
           </p>
 
-          <p>Помещая молекулу в горячую точку, мы усиливаем рассеяние света на ней - усиление может достигать миллионов и миллиардов раз (10^6 - 10^9 раз)!</p>
-         
           <div style="display: flex; flex-direction: column; align-items: center; margin: 30px 0 0 0;">
             <img src="nanoparticles.png" alt="Наночастицы" style="max-width: 100%; height: auto;">
           </div>
 
         <h2>Учим машину читать спектры</h2>
         <p>
-          Энергия, фотоны, наночастицы - это все замечательно, сказал бы внешний наблюдатель. Но как из этого получить полезную информацию, и при чем тут ИИ?
+          «Энергия, фотоны, наночастицы — всё это замечательно, — сказал бы внешний наблюдатель. — Но как из этого получить полезную информацию, и причём тут ИИ?»
         </p>
 
-        <p>Давайте разбираться. Помните, что мы говорили про сдвиг энергии <span class="text-black" style="font-style: bold;">(Δν)</span>? Дело в том, что этот сдвиг уникален только для каждого типа соединения и его структуры в молекуле. Сама молекула - это не просто набор атомов, а сложная структура, которая имеет свою индивидуальность.</p>
-         <p>Если визуализировать все возможные колебания соединений в молекуле (на примере аминокислот), то это выглядело бы так:</p>
+        <p>Давайте разбираться. Вспомним про <b>Raman shift <span class="text-black" style="font-style: bold;">(Δν)</span></b>: он определяется колебательными модами и молекулярной структурой. Молекула — это <b>не просто набор атомов</b>, а “архитектура” связей, у которой есть своя динамика: разные группы атомов колеблются по-разному и на своих частотах</p>
+        
+        <p>Если представить возможные колебания (например, для аминокислот), получится набор характерных “паттернов”:</p>
 
          <div style="display: flex; flex-direction: column; align-items: center; margin: 0px 0;">
            <video autoplay loop muted playsinline style="max-width: 100%; height: auto;">
@@ -1886,32 +1742,47 @@
          </div>
 
           <p>
-           Как видите, каждое соединение имеет свою <b>уникальную форму колебаний</b>, а значит и свою <b>уникальную частоту</b> <span class="text-black" style="font-style: bold;">(ν)</span>. К примеру, молекула, состоящая из соединений <i>Serine</i> и <i>Threonine</i>, будет иметь 
+            У каждого типа связи и функциональной группы своя <b>уникальная форму колебаний</b>, а значит и своя <b>уникальная частота <span class="text-black" style="font-style: bold;">(ν)</span></b>. К примеру, молекула, состоящая из соединений <i>Serine</i> и <i>Threonine</i>, будет иметь 
            спектр, отличный от молекулы, состоящей из соединений <i>Alanine</i> и <i>Valine</i>. Аналогию можно провести с музыкой - мелодию <i>гитары</i> и <i>фортепиано</i> Вы легко отличитите от мелодии <i>скрипки</i> и <i>саксофона</i>.
           </p>
 
-          <div style="display: flex; flex-direction: column; align-items: center; margin: 30px 0; position: relative;">
+          <div style="display: flex; flex-direction: column; align-items: center; margin: 10px 0; position: relative;">
             <div style="display: flex; align-items: center; gap: 20px;">
-              <div style="writing-mode: vertical-lr; text-orientation: mixed; font-family: Inter; font-size: 14px; font-weight: 600; color: var(--text-main);">Интенсивность</div>
               <div style="position: relative;">
-                <img src="spectra.png" alt="Спектры" style="max-width: 90%; height: auto; display: block;">
-                <div style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-family: Inter; font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap;">
-                  Сдвиг частоты (см<sup>-1</sup>)
-                </div>
+                <img src="spectra.png" alt="Спектры" style="height: auto; display: block;">
               </div>
             </div>
           </div>
 
-          <p>На графике выше представлены спектры двух молекул - Rhodamine 6G и Methyelene blue. Как видите, они имеют разный "состав" частот, благодаря которому их легко отличить друг от друга просто смотря на спектр.</p>
+          <p>
+            Если рассматривать спектры простых веществ (например, <i>Rhodamine 6G</i> и <i>Methyelene blue</i>), отличия часто заметны даже визуально: <b>разные пики, разные относительные интенсивности</b>.
+          </p>
           
-           <p>Однако, для сыворокти крови ситуация более сложная. Протеом крови насчитывает порядка 13000 уникальных белков, а метаболитов около 4500. </p>
+          <p>
+            Но сыворотка или плазма крови — это смесь тысяч компонентов: <span class="tooltip-term" data-tooltip="Совокупность всех белков, обнаруживаемых в крови (плазме/сыворотке), включая их формы и концентрации. Это “белковый портрет” состояния организма.">Протеом крови</span> насчитывает порядка <b>13000 уникальных белков</b>, а <b>метаболитов около 4500.</b> Суммарный спектр получается сложным: пики перекрываются, часть сигналов маскируется фоном, а различия между образцами становятся тонкими и многомерными.
+          </p>
 
-           <div style="display: flex; flex-direction: column; align-items: center; margin: 30px 0;">
-             <img src="cnn.png" alt="CNN" style="max-width: 100%; height: auto;">
-           </div>
+          <p>
+            Именно поэтому “читать” такие спектры вручную — практически невозможно. Зато эту задачу хорошо решают <b>математические методы</b>, где модель учится находить закономерности в данных и связывать спектр с клиническими параметрами.
+          </p>
+          
+          <div style="display: flex; flex-direction: column; align-items: center; margin: 30px 0;">
+            <img src="cnn.png" alt="CNN" style="max-width: 100%; height: auto;">
+          </div>
 
-           
+          <p>Мы используем <span class="tooltip-term" data-tooltip="Нейросети, которые находят локальные закономерности в данных с помощью “сверток”. Работают не только с изображениями: для 1D-спектров умеют выделять характерные пики и их сочетания.">сверточные нейронные сети (CNN)</span> для анализа одномерных спектров: они умеют выделять <b>устойчивые признаки</b> и строить предсказание нужных показателей. По сути, это тот же принцип, что и в <b>компьютерном зрении</b>, только вместо изображения — спектральная “кривая”, а вместо объектов — химические и биохимические паттерны.</p>
+
+          <p>Когда модель обучена на парных данных <b>“спектр → результат стандартного анализа”</b>, она может за считанные секунды выдавать прогноз по целевым параметрам для нового образца. В связке SERS + ML это выглядит как переход от множества разрозненных реакций к <b>одному измерению</b>, которое даёт многопараметрический профиль.</p>
  
+          <div class="highlight-box">
+            <p>
+              Сегодня биохимия — фундамент клинической диагностики, но её всё сложнее масштабировать из-за стоимости, логистики и ограниченной пропускной способности лабораторий. SERS быстро считывает молекулярный “отпечаток” образца, а машинное обучение переводит его в прогноз биохимических показателей.
+            </p>
+
+            <p>
+              Вместе это даёт подход “одно измерение — много параметров”: быстрее, дешевле и проще в масштабировании. Именно над этим мы и работаем — превращаем спектр в результат анализа за считанные секунды.            </p>
+          </div>
+
       </article>
     </div>
   </section>
